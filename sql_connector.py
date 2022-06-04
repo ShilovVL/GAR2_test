@@ -8,7 +8,6 @@ sql_string = "select objectguid, typename, name from addrobj where isactual = '1
     limit_tests)
 
 
-
 def get_data_for_test(sql_string):
     try:
         with SSHTunnelForwarder(
