@@ -247,3 +247,62 @@ def test_find_housecount_parentaoid_parenatguid(parentaoid, parentguid, housecou
     assert elapsed_time <= response_time
     assert str(type(response_body)) == "<class 'int'>"
     assert str(housecount) == str(response_body)
+
+
+@pytest.mark.parametrize("objectguid, objectaoid, parentaoid, OKATO, OKTMO, name",
+                         get_data_for_test_regions(sql_strings["test_find_addrobj_row"]["sql_request"],
+                                                   count_regions,
+                                                   sql_strings["test_find_addrobj_row"]["limit"]))
+def test_find_addrobject_row_aoid(objectguid, objectaoid, parentaoid, OKATO, OKTMO, name):
+    url = f"{domen}/api/addrobject/row?aoid={objectaoid}"
+
+    response = requests.get(url)
+    elapsed_time = response.elapsed.total_seconds()
+    response.encoding = 'utf-8'
+    response_body = response.json()
+
+    if len(response_body) > 1:
+        for i in range(len(response_body)):
+            if response_body[i]['AOID'] == parentaoid:
+                found_parent = True
+                print(" Parent found in response -", response_body[i]['AOID'], end="")
+                break
+
+    assert response.status_code == 200
+    assert elapsed_time <= response_time
+    assert found_parent
+    assert str(type(response_body[0])) == "<class 'dict'>"
+    assert response_body[-1]["AOID"] == objectaoid
+    assert response_body[-1]["OKTMO"] == OKTMO
+    assert response_body[-1]["OKATO"] == OKATO
+    assert response_body[-1]["FORMALNAME"] == name
+
+
+@pytest.mark.parametrize("objectguid, objectaoid, parentaoid, OKATO, OKTMO, name",
+                         get_data_for_test_regions(sql_strings["test_find_addrobj_row"]["sql_request"],
+                                                   count_regions,
+                                                   sql_strings["test_find_addrobj_row"]["limit"]))
+def test_find_addrobject_row_guid(objectguid, objectaoid, parentaoid, OKATO, OKTMO, name):
+    url = f"{domen}/api/addrobject/row?aoguid={objectguid}"
+
+    response = requests.get(url)
+    elapsed_time = response.elapsed.total_seconds()
+    response.encoding = 'utf-8'
+    response_body = response.json()
+
+    if len(response_body) > 1:
+        for i in range(len(response_body)):
+            if response_body[i]['AOID'] == parentaoid:
+                found_parent = True
+                print(" Parent found in response -", response_body[i]['AOID'], end="")
+                break
+
+    assert response.status_code == 200
+    assert elapsed_time <= response_time
+    assert found_parent
+    assert str(type(response_body[0])) == "<class 'dict'>"
+    assert response_body[-1]["AOID"] == objectaoid
+    assert response_body[-1]["OKTMO"] == OKTMO
+    assert response_body[-1]["OKATO"] == OKATO
+    assert response_body[-1]["FORMALNAME"] == name
+

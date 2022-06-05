@@ -8,7 +8,8 @@ sql_strings = {"test_find_not_active_aguid":    {"name": "find_not_active_aquid"
                "test_find_addrobject_aguid_aoid":   {"name": "test_addrobj_aguid_aoid", "sql_request": "select regioncode, objectguid, objectaoid, t6 OKATO, t7 OKTMO, name from adm_objects_registry where level in (1, 2, 3,4,5,6,7,8,9,10,11,12,13,14,15,16) and regioncode = ", "limit": limit_in_region},
                "test_find_childcount":          {"name": "test_childcount", "sql_request_1": "select parentaoid, parentguid, count(parentaoid) from adm_objects_registry where regioncode = ", "sql_request_2": " group by (parentaoid, parentguid ) having count(parentaoid) > '2' limit ", "limit": limit_in_region},
                "test_find_addrobject_full":     {"name": "test_addrobj_full", "sql_request": "select objectguid, objectaoid, name from adm_objects_registry where level in (1, 2, 3,4,5,6,7,8,14) and regioncode = ", "limit": limit_in_region},
-               "test_find_addrobject_housecount":   {"name": "test_housecount", "sql_request_1": "select parentaoid, parentguid , count(parentaoid)  from adm_houses_registry ahr  where regioncode  = ", "sql_request_2": " group by (parentaoid, parentguid ) having count(parentaoid) > '1' limit ", "limit": limit_in_region}
+               "test_find_addrobject_housecount":   {"name": "test_housecount", "sql_request_1": "select parentaoid, parentguid , count(parentaoid)  from adm_houses_registry ahr  where regioncode  = ", "sql_request_2": " group by (parentaoid, parentguid ) having count(parentaoid) > '1' limit ", "limit": limit_in_region},
+               "test_find_addrobj_row":         {"name": "test_addrobj_row", "sql_request": "select objectguid, objectaoid, parentaoid, t6 OKATO, t7 OKTMO, name from adm_objects_registry where level in (2, 3,4,5,6,7,8,14) and regioncode = ", "limit": limit_in_region}
                }
 
 """
