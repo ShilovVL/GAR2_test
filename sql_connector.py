@@ -2,10 +2,10 @@ from secret import SECRET
 from sshtunnel import SSHTunnelForwarder
 import psycopg2
 
-response_time = 20.00  # Максимальное время ответа, не считающееся ошибкой (сек)
-limit_tests = 100
-sql_string = "select objectguid, typename, name from addrobj where isactual = '1'  and isactive = '0' ORDER BY random() LIMIT " + str(
-    limit_tests)
+# response_time = 20.00  # Максимальное время ответа, не считающееся ошибкой (сек)
+# limit_tests = 100
+# sql_string = "select objectguid, typename, name from addrobj where isactual = '1'  and isactive = '0' ORDER BY random() LIMIT " + str(
+#     limit_tests)
 
 
 def get_data_for_test(sql_string):
@@ -46,4 +46,4 @@ def get_data_for_test(sql_string):
         print("Fail connection")
 
 
-print(get_data_for_test(sql_string))
+# print(get_data_for_test(sql_string))
