@@ -149,7 +149,7 @@ def test_find_addrobject_aoid(regioncode, objectguid, objectaoid, OKATO, OKTMO, 
                                                        limit_for_region=sql_strings["test_find_addrobject_aguid_aoid"][
                                                            "limit"]))
 def test_find_chilcount_parentaoid_parenatguid(parentaoid, parentguid, childcount):
-    # Часть 1. Тест по parenaoid
+    # 1. Тест по parenaoid
     url = f"{domen}/api/addrobject/childCount?aoid={parentaoid}"
 
     response = requests.get(url)
@@ -162,7 +162,7 @@ def test_find_chilcount_parentaoid_parenatguid(parentaoid, parentguid, childcoun
     assert str(type(response_body)) == "<class 'int'>"
     assert str(childcount) == str(response_body)
 
-    # Часть 2. Тест по parentguid
+    # 2. Тест по parentguid
     url2 = f"{domen}/api/addrobject/childCount?aoguid={parentguid}"
 
     response = requests.get(url2)
@@ -222,7 +222,7 @@ def test_find_addrobject_full_aoid(objectguid, objectaoid, name):
                                                        limit_for_region=sql_strings["test_find_addrobject_housecount"][
                                                            "limit"]))
 def test_find_housecount_parentaoid_parenatguid(parentaoid, parentguid, housecount):
-    # Часть 1. Тест по parenaoid
+    # 1. Тест по parenaoid
     url = f"{domen}/api/addrobject/houseCount?aoid={parentaoid}"
 
     response = requests.get(url)
@@ -235,7 +235,7 @@ def test_find_housecount_parentaoid_parenatguid(parentaoid, parentguid, housecou
     assert str(type(response_body)) == "<class 'int'>"
     assert str(housecount) == str(response_body)
     print(parentaoid, " HouseCount -", response_body, end="")
-    # Часть 2. Тест по parentguid
+    # 2. Тест по parentguid
     url2 = f"{domen}/api/addrobject/houseCount?aoguid={parentguid}"
 
     response = requests.get(url2)
@@ -343,6 +343,136 @@ def test_street_pg(region_code, place_aoguid, prefix, AOGUID, AOID, OKATO, OKTMO
             f"\n OFFNAME [{response_body[testindex]['OFFNAME']}]  HE найден в строке [{response_body[testindex]['RELNAME']}]",
             end="")
     assert str(response_body[testindex]["RELNAME"]).find(",") != 0
+    assert elapsed_time <= response_time
+    assert str(type(response_body[0])) == "<class 'dict'>"
+    assert response_body[testindex]["AOID"] == AOID
+    assert response_body[testindex]["OKTMO"] == OKTMO
+    assert response_body[testindex]["OKATO"] == OKATO
+    assert response_body[testindex]["FORMALNAME"] == FORMALNAME
+
+
+@pytest.mark.parametrize("regioncode, parentaoid, housenum, objectguid, postal_code, OKATO, OKTMO",
+                         get_data_for_test_regions_big(sql_strings["test_find_house_aoguid"]["sql_request_1"],
+                                                       sql_strings["test_find_house_aoguid"]["sql_request_2"],
+                                                       number_regions=count_regions,
+                                                       limit_for_region=sql_strings["test_street"]["limit"]))
+def test_find_house_aoguid(regioncode, parentaoid, housenum, objectguid, postal_code, OKATO, OKTMO):
+    url = f"{domen}/api/house/aoguid?aoguid={objectguid}"
+
+    response = requests.get(url)
+    elapsed_time = response.elapsed.total_seconds()
+    response.encoding = 'utf-8'
+    response_body = response.json()
+    print("\t" * 2, response_body[0]['RELNAME'], end="")
+
+    assert response.status_code == 200
+    assert elapsed_time <= response_time
+    assert str(type(response_body[0])) == "<class 'dict'>"
+    assert response_body[0]["PARENTAOID"] == parentaoid
+    assert response_body[0]["OKTMO"] == OKTMO
+    assert response_body[0]["OKATO"] == OKATO
+    assert response_body[0]["HOUSENUM"] == str.upper(housenum)
+    assert response_body[0]["POSTALCODE"] == postal_code
+    assert response_body[0]["REGIONCODE"] == regioncode
+
+
+@pytest.mark.parametrize("regioncode, parentaoid, housenum, objectaoid, postal_code, OKATO, OKTMO",
+                         get_data_for_test_regions_big(sql_strings["test_find_house_aoguid"]["sql_request_1"],
+                                                       sql_strings["test_find_house_aoguid"]["sql_request_2"],
+                                                       number_regions=count_regions,
+                                                       limit_for_region=sql_strings["test_street"]["limit"]))
+def test_find_house_aoid(regioncode, parentaoid, housenum, objectaoid, postal_code, OKATO, OKTMO):
+    url = f"{domen}/api/house/aoid?aoid={objectaoid}"
+
+    response = requests.get(url)
+    elapsed_time = response.elapsed.total_seconds()
+    response.encoding = 'utf-8'
+    response_body = response.json()
+    print("\t", response_body['RELNAME'], end="")
+
+    assert response.status_code == 200
+    assert elapsed_time <= response_time
+    assert str(type(response_body)) == "<class 'dict'>"
+    assert response_body["PARENTAOID"] == parentaoid
+    assert response_body["OKTMO"] == OKTMO
+    assert response_body["OKATO"] == OKATO
+    assert response_body["HOUSENUM"] == str.upper(housenum)
+    assert response_body["POSTALCODE"] == postal_code
+    assert response_body["REGIONCODE"] == regioncode
+
+
+@pytest.mark.parametrize("parentaoid, housenum, objectaoid,       postal_code,      OKATO,    OKTMO,parentguid",
+                         get_data_for_test(sql_strings["test_house_search"]["sql_request"] + sql_strings["test_house_search"]["limit"]))
+def test_house_search_parentaoid_parenatguid(parentaoid, housenum, objectaoid, postal_code, OKATO, OKTMO, parentguid):
+    url = f"{domen}/api/house/search?aoid={parentaoid}&housenum={str.upper(housenum)}"
+
+    response = requests.get(url)
+    elapsed_time = response.elapsed.total_seconds()
+    response.encoding = 'utf-8'
+    response_body = response.json()
+    testindex = 0
+
+    if len(response_body) > 1:
+
+        for i in range(len(response_body)):
+            if response_body[i]['PARENTAOID'] == parentaoid:
+                testindex = i
+
+    assert response.status_code == 200
+    assert elapsed_time <= response_time
+    assert str(type(response_body[0])) == "<class 'dict'>"
+    assert response_body[testindex]["PARENTAOID"] == parentaoid
+    assert response_body[testindex]["OKTMO"] == OKTMO
+    assert response_body[testindex]["OKATO"] == OKATO
+    assert response_body[testindex]["HOUSENUM"] == str.upper(housenum)
+    # test with parentguid
+    url2 = f"{domen}/api/house/search?aoguid={parentguid}&housenum={str.upper(housenum)}"
+
+    response = requests.get(url2)
+    elapsed_time = response.elapsed.total_seconds()
+    response.encoding = 'utf-8'
+    response_body = response.json()
+    testindex = 0  # номер правильной записи в ответе
+
+    if len(response_body) > 1:
+
+        for i in range(len(response_body)):
+            if response_body[i]['PARENTAOID'] == parentaoid:
+                testindex = i
+
+    assert response.status_code == 200
+    assert elapsed_time <= response_time
+    assert str(type(response_body[0])) == "<class 'dict'>"
+    assert response_body[testindex]["PARENTAOID"] == parentaoid
+    assert response_body[testindex]["OKTMO"] == OKTMO
+    assert response_body[testindex]["OKATO"] == OKATO
+    assert response_body[testindex]["HOUSENUM"] == str.upper(housenum)
+
+
+@pytest.mark.parametrize("region_code, prefix, AOGUID,     AOID,       OKATO, OKTMO, FORMALNAME",
+                         get_data_for_test_regions_big(sql_strings["test_place"]["sql_request_1"],
+                                                       sql_strings["test_place"]["sql_request_2"],
+                                                       number_regions=count_regions,
+                                                       limit_for_region=sql_strings["test_place"]["limit"]))
+def test_place_pg(region_code, prefix, AOGUID, AOID, OKATO, OKTMO, FORMALNAME):
+    url = f"{domen}/api/place?region_code={region_code}&prefix={prefix}"
+
+    response = requests.get(url)
+    elapsed_time = response.elapsed.total_seconds()
+    response.encoding = 'utf-8'
+
+    response_body = response.json()
+    testindex = 0
+    # print(len(response_body), response_body)
+
+    if len(response_body) > 1:
+        limit = len(response_body)
+
+        for i in range(limit):
+            if response_body[i]['AOID'] == AOID:
+                testindex = i
+
+    assert response.status_code == 200
     assert elapsed_time <= response_time
     assert str(type(response_body[0])) == "<class 'dict'>"
     assert response_body[testindex]["AOID"] == AOID

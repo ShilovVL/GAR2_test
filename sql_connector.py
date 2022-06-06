@@ -28,6 +28,7 @@ def get_data_for_test(sql_string):
             curs = conn.cursor()
 
             data_for_test = []
+            # print(sql_string)
             curs.execute(sql_string)
             rows = curs.fetchall()
 
@@ -80,6 +81,7 @@ def get_data_for_test_regions(sql_string, number_regions=30, limit_for_region=20
             data_for_test = []
             for i in regions_for_test:
                 test_sql_string = sql_string + f"'{i}' limit '{limit_for_region}'"
+                # print(test_sql_string)
                 curs.execute(test_sql_string)
                 rows = curs.fetchall()
                 for y in rows:
@@ -132,7 +134,7 @@ def get_data_for_test_regions_big(sql_string1, sql_string2, number_regions=30, l
             for i in regions_for_test:
 
                 test_sql_string = sql_string1 + "'" + str(i) + "'" + sql_string2 + str(limit_for_region)
-                print(test_sql_string)
+                # print(test_sql_string)
                 curs.execute(test_sql_string)
                 rows = curs.fetchall()
                 for y in rows:
@@ -145,6 +147,9 @@ def get_data_for_test_regions_big(sql_string1, sql_string2, number_regions=30, l
         print("Fail connection")
 
 
+# print(sql_strings["test_house_search"]["sql_request"])
 # print(get_data_for_test(sql_string))
-# print(len(get_data_for_test_regions(sql_strings["test_find_addrobject_aguid_aoid"]["sql_request"], 50, 100)))
+
+# print(len(get_data_for_test(sql_strings["test_house_search"]["sql_request"] + sql_strings["test_house_search"]["limit"])))
+# print(len(get_data_for_test_regions(sql_strings["test_house_search"]["sql_request"], 50, 100)))
 # print(get_data_for_test_regions_big(sql_strings["test_find_addrobject_housecount"]["sql_request_1"], sql_strings["test_find_addrobject_housecount"]["sql_request_2"]))
