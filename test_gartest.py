@@ -306,3 +306,46 @@ def test_find_addrobject_row_guid(objectguid, objectaoid, parentaoid, OKATO, OKT
     assert response_body[-1]["OKATO"] == OKATO
     assert response_body[-1]["FORMALNAME"] == name
 
+
+@pytest.mark.parametrize("region_code, place_aoguid, prefix, AOGUID,     AOID,       OKATO, OKTMO, FORMALNAME",
+                         get_data_for_test_regions_big(sql_strings["test_street"]["sql_request_1"],
+                                                       sql_strings["test_street"]["sql_request_2"],
+                                                       number_regions=count_regions,
+                                                       limit_for_region=sql_strings["test_street"]["limit"]))
+def test_street_pg(region_code, place_aoguid, prefix, AOGUID, AOID, OKATO, OKTMO, FORMALNAME):
+    url = f"{domen}/api/street?place_aoguid={place_aoguid}&prefix={prefix}"
+
+    response = requests.get(url)
+    elapsed_time = response.elapsed.total_seconds()
+    # response.encoding = 'utf-8'
+    response_body = response.json()
+    testindex = 0  # номер правильной записи в ответе
+
+    if len(response_body) > 1:
+
+        for i in range(len(response_body)):
+            if response_body[i]['AOID'] == AOID:
+                testindex = i
+    print("place_aoguid ", place_aoguid, " | prefix ", prefix, " |  RELNAME ", response_body[testindex]["RELNAME"],
+          " |  номер/место в ответе JSON - ", testindex + 1, "/", len(response_body), sep="", end="")
+    assert response.status_code == 200
+    # assert response_body[testindex]["RELNAME"] == response_body[testindex]["OFFNAME"]
+    assert str(response_body[testindex]["RELNAME"]).find(str(prefix)) >= 0  # prefix найден в RELNAME?
+
+    if str(response_body[testindex]["RELNAME"]).find(str(prefix)) >= 0:
+        print(f"\n Префикс [{prefix}] найден в строке [{response_body[testindex]['RELNAME']}]", end="")
+    if str(response_body[testindex]["RELNAME"]).find(str(response_body[testindex]["OFFNAME"])) >= 0:
+        print(
+            f"\n OFFNAME [{response_body[testindex]['OFFNAME']}] найден в строке [{response_body[testindex]['RELNAME']}]",
+            end="")
+    else:
+        print(
+            f"\n OFFNAME [{response_body[testindex]['OFFNAME']}]  HE найден в строке [{response_body[testindex]['RELNAME']}]",
+            end="")
+    assert str(response_body[testindex]["RELNAME"]).find(",") != 0
+    assert elapsed_time <= response_time
+    assert str(type(response_body[0])) == "<class 'dict'>"
+    assert response_body[testindex]["AOID"] == AOID
+    assert response_body[testindex]["OKTMO"] == OKTMO
+    assert response_body[testindex]["OKATO"] == OKATO
+    assert response_body[testindex]["FORMALNAME"] == FORMALNAME
