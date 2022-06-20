@@ -3,4 +3,4 @@ import os
 
 class SECRET:
     DATABASE_USER = os.environ['user']
-    DATABASE_PASSWORD = os.environ['password']
+    DATABASE_PASSWORD = os.environ['password1']

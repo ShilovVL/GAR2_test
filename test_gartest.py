@@ -377,10 +377,10 @@ def test_find_house_aoguid(regioncode, parentaoid, housenum, objectguid, postal_
 
 
 @pytest.mark.parametrize("regioncode, parentaoid, housenum, objectaoid, postal_code, OKATO, OKTMO",
-                         get_data_for_test_regions_big(sql_strings["test_find_house_aoguid"]["sql_request_1"],
-                                                       sql_strings["test_find_house_aoguid"]["sql_request_2"],
+                         get_data_for_test_regions_big(sql_strings["test_find_house_aoid"]["sql_request_1"],
+                                                       sql_strings["test_find_house_aoid"]["sql_request_2"],
                                                        number_regions=count_regions,
-                                                       limit_for_region=sql_strings["test_street"]["limit"]))
+                                                       limit_for_region=sql_strings["test_find_house_aoid"]["limit"]))
 def test_find_house_aoid(regioncode, parentaoid, housenum, objectaoid, postal_code, OKATO, OKTMO):
     url = f"{domen}/api/house/aoid?aoid={objectaoid}"
 
@@ -417,7 +417,7 @@ def test_house_search_parentaoid_parenatguid(parentaoid, housenum, objectaoid, p
     if len(response_body) > 1:
 
         for i in range(len(response_body)):
-            if response_body[i]['PARENTAOID'] == parentaoid:
+            if response_body[i]['PARENTAOID'] == parentaoid and response_body[i]["OKTMO"] == OKTMO:
                 testindex = i
 
     assert response.status_code == 200
@@ -439,7 +439,7 @@ def test_house_search_parentaoid_parenatguid(parentaoid, housenum, objectaoid, p
     if len(response_body) > 1:
 
         for i in range(len(response_body)):
-            if response_body[i]['PARENTAOID'] == parentaoid:
+            if response_body[i]['PARENTAOID'] == parentaoid and response_body[i]["OKTMO"] == OKTMO:
                 testindex = i
 
     assert response.status_code == 200
@@ -575,3 +575,32 @@ def test_search_one_const_obj(name="2-я Школьная", parent_name="Кем�
            "Кемеровская область - Кузбасс Область, Город Кемерово, Улица 2-я Школьная", f"Формат ответа search изменился!"
     assert not error_text, f"Строка '{name}' не найдена в {response_body[0]['fullAddress']}"
     assert not error_act
+
+
+@pytest.mark.parametrize("regioncode, parentaoid, housenum, objectguid, postal_code, OKATO, OKTMO",
+                         get_data_for_test_regions_big(sql_strings["test_house_aoguid_not_null"]["sql_request_1"],
+                                                       sql_strings["test_house_aoguid_not_null"]["sql_request_2"],
+                                                       number_regions=count_regions,
+                                                       limit_for_region=sql_strings["test_house_aoguid_not_null"][
+                                                           "limit"]))
+def test_find_house_aoguid_notnull(regioncode, parentaoid, housenum, objectguid, postal_code, OKATO, OKTMO):
+    url = f"{domen}/api/house/aoguid?aoguid={objectguid}"
+
+    response = requests.get(url)
+    elapsed_time = response.elapsed.total_seconds()
+    response.encoding = 'utf-8'
+    response_body = response.json()
+    print("\t" * 2, response_body[0]['RELNAME'], " AOGUID -", response_body[0]["AOGUID"], objectguid, end="")
+
+    assert response.status_code == 200
+    assert elapsed_time <= response_time
+    assert str(type(response_body[0])) == "<class 'dict'>"
+    assert response_body[0]["PARENTAOID"] == parentaoid
+    assert response_body[0]["OKTMO"] == OKTMO
+    assert response_body[0]["OKATO"] == OKATO
+    assert response_body[0]["HOUSENUM"] == str.upper(housenum)
+    assert response_body[0]["POSTALCODE"] == postal_code
+    assert response_body[0]["REGIONCODE"] == regioncode
+    assert response_body[0]["AOGUID"] != "None"
+    assert response_body[0]["AOGUID"] is not None
+    assert len(response_body[0]["AOGUID"]) != 0

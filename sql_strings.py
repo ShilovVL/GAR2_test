@@ -12,12 +12,15 @@ sql_strings = {"test_find_not_active_aguid":    {"name": "find_not_active_aquid"
                "test_find_regions":             {"name": "test_regions", "sql_request": "select regioncode, objectaoid, t6 OKATO, t7 OKTMO, name from adm_objects_registry where level in (1) order by objectid "},
                "test_street":                   {"name": "test_street", "sql_request_1": "select regioncode, parentguid, name, objectguid, objectaoid, t6, t7, name  from adm_objects_registry where level in (7,8,9,10,11,12,13,14,15,16) and regioncode = ", "sql_request_2": " order by level limit ", "limit": limit_in_region},
                "test_find_house_aoguid":        {"name": "test_house_aoguid", "sql_request_1": "select regioncode, parentaoid, housenum, objectguid, t5 as postal_code, t6 as OKATO, t7 OKTMO from adm_houses_registry where isactual = '1' and regioncode = ", "sql_request_2": " and isactive = '1' and t5 notnull limit ", "limit": limit_in_region},
-               "test_house_search":             {"name": "test_house_search", "sql_request": "select parentaoid, housenum, objectaoid, t5 as postal_code, t6 as OKATO, t7 OKTMO, parentguid from adm_houses_registry where isactual = '1' and isactive = '1' and t5 notnull limit ", "limit": limit_in_region},
+               "test_find_house_aoid":          {"name": "test_house_aoguid", "sql_request_1": "select regioncode, parentaoid, housenum, objectaoid, t5 as postal_code, t6 as OKATO, t7 OKTMO from adm_houses_registry where isactual = '1' and regioncode = ", "sql_request_2": " and isactive = '1' and t5 notnull limit ", "limit": limit_in_region},
+               "test_house_search":             {"name": "test_house_search", "sql_request": "select parentaoid, housenum, objectaoid, t5 as postal_code, t6 as OKATO, t7 OKTMO, parentguid from adm_houses_registry where isactual = '1' and isactive = '1' and t5 notnull limit ", "limit": limit_no_region},
                "test_place":                    {"name": "test_place", "sql_request_1": "select regioncode , name, objectguid, objectaoid, t6, t7, name  from adm_objects_registry where level in (2,3,4,5,6) and regioncode = ", "sql_request_2": " order by level limit ", "limit": limit_in_region},
-               "test_search":                   {"name": "test_search", "sql_request_1": "select regioncode, name, level, isactual, parentid from adm_objects_registry where level in (floor(random()*(15-4+1))+4) and regioncode = ", "sql_request_2": "select name from  adm_objects_registry aor where objectid = ", "limit": limit_in_region}
+               "test_search":                   {"name": "test_search", "sql_request_1": "select regioncode, name, level, isactual, parentid from adm_objects_registry where level in (floor(random()*(15-4+1))+4) and regioncode = ", "sql_request_2": "select name from  adm_objects_registry aor where objectid = ", "limit": limit_in_region},
+               "test_house_aoguid_not_null":    {"name": "test_not_null", "sql_request_1": "select regioncode, parentaoid, housenum, objectguid, t5 as postal_code, t6 as OKATO, t7 OKTMO from adm_houses_registry where isactual = '1' and regioncode = ", "sql_request_2": " and isactive = '1' and t5 notnull limit ", "limit": limit_in_region}
                }
 
 """
-
+ \
+                             
 
 """

@@ -4,9 +4,7 @@ import pytest
 from sql_strings import sql_strings
 from sql_connector import get_data_for_test, get_data_for_test_regions, get_data_for_test_regions_big
 from urls import domen
-
-response_time = 5.0  # Максимальное время ответа, не считающееся ошибкой (сек)
-version_gar = '3.3.1'  # В данный момент версия не хранится в бд, сервис возвращает константу. После реализации, потребуется доработка
+from params import response_time, version_gar
 
 
 def test_get_version_gar():
@@ -15,11 +13,11 @@ def test_get_version_gar():
     response = requests.get(url)
     elapsed_time = response.elapsed.total_seconds()
     response.encoding = 'utf-8'
-    response_body = response.json()
+    response_body = response.text
 
     assert response.status_code == 200
     assert elapsed_time <= response_time
-    assert str(type(response_body)) == "<class 'float'>"
+
     assert str(version_gar) == str(response_body)
     print(" Версия ГАР -", response_body, end="")
 
@@ -65,7 +63,8 @@ def test_regions():
                 break
 
 
-@pytest.mark.parametrize("regioncode, objectaoid, OKATO, OKTMO, name", get_data_for_test(sql_strings["test_find_regions"]["sql_request"]))
+@pytest.mark.parametrize("regioncode, objectaoid, OKATO, OKTMO, name",
+                         get_data_for_test(sql_strings["test_find_regions"]["sql_request"]))
 def test_region_code(regioncode, objectaoid, OKATO, OKTMO, name):
     url = f"{domen}/api/region/code?code={regioncode}"
 

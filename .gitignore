@@ -1,9 +1,13 @@
 # my temp files
 123*.py
-
+test_12.py
+*.html
+*.xhtml
 *.pyc
 *.egg-info
-
+GAR3.3.1_1
+GAR3.3.1_2
+GAR*
 
 .DS_Store
 

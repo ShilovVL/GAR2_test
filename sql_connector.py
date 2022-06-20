@@ -217,5 +217,5 @@ def get_data_for_test_search(sql_string1, sql_string2, number_regions=30, limit_
 
 # print(len(get_data_for_test(sql_strings["test_house_search"]["sql_request"] + sql_strings["test_house_search"]["limit"])))
 # print(len(get_data_for_test_regions(sql_strings["test_house_search"]["sql_request"], 50, 100)))
-# print(get_data_for_test_regions_big(sql_strings["test_find_addrobject_housecount"]["sql_request_1"], sql_strings["test_find_addrobject_housecount"]["sql_request_2"]))
+# print(get_data_for_test_regions_big(sql_strings["test_house_aoguid_not_null"]["sql_request_1"], sql_strings["test_house_aoguid_not_null"]["sql_request_2"]))
 # print(get_data_for_test_search(sql_strings["test_search"]["sql_request_1"],sql_strings["test_search"]["sql_request_2"]))
