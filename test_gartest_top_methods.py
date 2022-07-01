@@ -59,7 +59,10 @@ def test_regions():
                 assert response_body[y]["OKTMO"] == sql_data[i][3]
                 assert response_body[y]["FORMALNAME"] == sql_data[i][4]
                 assert response_body[y]["REGIONCODE"] == sql_data[i][0]
-                print("", response_body[y]['RELNAME'], " ", end="\n")
+                assert str(response_body[y]["MUNFULLNAME"]).find(response_body[y]["FORMALNAME"]) >= 0
+                assert len(str(response_body[y]["MUNFULLNAME"])) > 0
+                print("", response_body[y]['RELNAME'], " Ok")
+                print(f" MUNFULLNAME - [{response_body[y]['MUNFULLNAME']}]", end="\n\n")
                 break
 
 
@@ -72,7 +75,8 @@ def test_region_code(regioncode, objectaoid, OKATO, OKTMO, name):
     elapsed_time = response.elapsed.total_seconds()
     response.encoding = 'utf-8'
     response_body = response.json()
-    print("\t" * 2, response_body[0]['RELNAME'], end="")
+    print("\t" * 2, response_body[0]['RELNAME'])
+    print(f"\t 'MUNFULLNAME' - [{response_body[0]['MUNFULLNAME']}]", end="")
 
     assert response.status_code == 200
     assert elapsed_time <= response_time
@@ -82,3 +86,6 @@ def test_region_code(regioncode, objectaoid, OKATO, OKTMO, name):
     assert response_body[0]["OKATO"] == OKATO
     assert response_body[0]["FORMALNAME"] == name
     assert response_body[0]["REGIONCODE"] == regioncode
+    assert str(response_body[0]["MUNFULLNAME"]).find(response_body[0]["FORMALNAME"]) >= 0
+    assert len(str(response_body[0]["MUNFULLNAME"])) > 0
+

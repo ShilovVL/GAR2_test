@@ -62,7 +62,18 @@ def test_delta_addrobject_aguid(objectguid, name):
         for i in range(len(response_body)):
             if response_body[i]['FORMALNAME'] == name:
                 testindex = i
-    print(response_body[testindex]["FORMALNAME"], " aoguid -", response_body[testindex]["AOGUID"], end="")
+    print("\n", response_body[testindex]["FORMALNAME"], " aoguid -", response_body[testindex]["AOGUID"], end="")
+
+    print(
+        f"\n MUNFULNAME {response_body[testindex]['MUNFULLNAME']} | результат поиска [{response_body[testindex]['OFFNAME']}] в MFN - {str(response_body[testindex]['MUNFULLNAME']).find(str(response_body[testindex]['OFFNAME']))}",
+        end="")
+    assert len(response_body[testindex]["MUNFULLNAME"]) > 0
+    assert str(response_body[testindex]["MUNFULLNAME"]).find(response_body[testindex]["OFFNAME"]) >= 0 \
+           or str(response_body[testindex]["RELNAME"]).find(str("Километр")) >= 0 \
+           or str(response_body[testindex]["RELNAME"]).find(str("Линия")) >= 0 \
+           or str(response_body[testindex]["RELNAME"]).find(str("Проспект")) >= 0 \
+           or str(response_body[testindex]["RELNAME"]).find(str("Шоссе")) >= 0
+
     assert response.status_code == 200
     assert elapsed_time <= response_time
     assert str(type(response_body[0])) == "<class 'dict'>"
@@ -111,6 +122,20 @@ def test_find_addrobject_aguid(regioncode, objectguid, objectaoid, OKATO, OKTMO,
             if response_body[i]['AOID'] == objectaoid:
                 testindex = i
     print(response_body[testindex]["FORMALNAME"], " aoguid -", response_body[testindex]["AOGUID"], end="")
+
+    print(
+        f"\n MUNFULNAME {response_body[testindex]['MUNFULLNAME']} | результат поиска [{response_body[testindex]['OFFNAME']}] в MFN - {str(response_body[testindex]['MUNFULLNAME']).find(str(response_body[testindex]['OFFNAME']))}",
+        end="")
+    if response_body[testindex]["AOLEVEL"] not in [2, 6, "2", "6"] and response_body[testindex][
+        "OFFNAME"] == 'Область Мурманская':
+        assert len(response_body[testindex]['MUNFULLNAME']) > 0
+        assert str(response_body[testindex]["MUNFULLNAME"]).find("null") == -1
+        assert str(response_body[testindex]["MUNFULLNAME"]).find(response_body[testindex]["OFFNAME"]) >= 0 \
+               or str(response_body[testindex]["RELNAME"]).find(str("Километр")) >= 0 \
+               or str(response_body[testindex]["RELNAME"]).find(str("Линия")) >= 0 \
+               or str(response_body[testindex]["RELNAME"]).find(str("Проспект")) >= 0 \
+               or str(response_body[testindex]["RELNAME"]).find(str("Шоссе")) >= 0 \
+               or str(response_body[testindex]["RELNAME"]).find(str('Мурманская Область')) >= 0
     assert response.status_code == 200
     assert elapsed_time <= response_time
     assert str(type(response_body[0])) == "<class 'dict'>"
@@ -131,7 +156,19 @@ def test_find_addrobject_aoid(regioncode, objectguid, objectaoid, OKATO, OKTMO, 
     elapsed_time = response.elapsed.total_seconds()
     response.encoding = 'utf-8'
     response_body = response.json()
-    print(response_body["FORMALNAME"], response_body["AOGUID"], end="")
+    print("\n", response_body["FORMALNAME"], response_body["AOGUID"], end="")
+
+    print(
+        f"\n MUNFULNAME {response_body['MUNFULLNAME']} | результат поиска [{response_body['OFFNAME']}] в MFN - {str(response_body['MUNFULLNAME']).find(str(response_body['OFFNAME']))}",
+        end="")
+    if response_body["AOLEVEL"] not in [2, 6, "2", "6"] and response_body["OFFNAME"] == 'Область Мурманская':
+        assert str(response_body["MUNFULLNAME"]).find("null") == -1
+        assert len(response_body['MUNFULLNAME']) > 0
+        assert str(response_body["MUNFULLNAME"]).find(response_body["OFFNAME"]) >= 0 \
+               or str(response_body["RELNAME"]).find(str("Километр")) >= 0 \
+               or str(response_body["RELNAME"]).find(str("Линия")) >= 0 \
+               or str(response_body["RELNAME"]).find(str("Проспект")) >= 0 \
+               or str(response_body["RELNAME"]).find(str("Шоссе")) >= 0
 
     assert response.status_code == 200
     assert elapsed_time <= response_time
@@ -182,7 +219,7 @@ def test_find_chilcount_parentaoid_parenatguid(parentaoid, parentguid, childcoun
                                                    count_regions,
                                                    sql_strings["test_find_addrobject_full"]["limit"]))
 def test_find_addrobject_full_guid(objectguid, objectaoid, name):
-    url = f"{domen}/api/addrobject/full?aoguid={objectguid}"
+    url = f"{domen}/api/addrobject/full?aoguid={objectguid}&munHierarchy=true"
 
     response = requests.get(url)
     elapsed_time = response.elapsed.total_seconds()
@@ -201,7 +238,7 @@ def test_find_addrobject_full_guid(objectguid, objectaoid, name):
                                                    count_regions,
                                                    sql_strings["test_find_addrobject_full"]["limit"]))
 def test_find_addrobject_full_aoid(objectguid, objectaoid, name):
-    url = f"{domen}/api/addrobject/full?aoid={objectaoid}"
+    url = f"{domen}/api/addrobject/full?aoid={objectaoid}&munHierarchy=true"
 
     response = requests.get(url)
     elapsed_time = response.elapsed.total_seconds()
@@ -272,6 +309,17 @@ def test_find_addrobject_row_aoid(objectguid, objectaoid, parentaoid, OKATO, OKT
     assert elapsed_time <= response_time
     assert found_parent
     assert str(type(response_body[0])) == "<class 'dict'>"
+
+    if response_body[-1]["AOLEVEL"] not in [2, 6, "2", "6"]:
+        assert len(response_body[-1]['MUNFULLNAME']) > 0
+        if str(response_body[-1]["OFFNAME"]).find("Линия") >= 0 \
+                or str(response_body[-1]["OFFNAME"]).find("Шоссе") >= 0 \
+                or str(response_body[-1]["OFFNAME"]).find("Километр") >= 0 \
+                or str(response_body[-1]["OFFNAME"]).find("Проспект") >= 0:
+            pass
+        else:
+            assert str(response_body[-1]["MUNFULLNAME"]).find(response_body[-1]["OFFNAME"]) >= 0
+
     assert response_body[-1]["AOID"] == objectaoid
     assert response_body[-1]["OKTMO"] == OKTMO
     assert response_body[-1]["OKATO"] == OKATO
@@ -301,18 +349,30 @@ def test_find_addrobject_row_guid(objectguid, objectaoid, parentaoid, OKATO, OKT
     assert elapsed_time <= response_time
     assert found_parent
     assert str(type(response_body[0])) == "<class 'dict'>"
+
+    if response_body[-1]["AOLEVEL"] not in [2, 6, "2", "6"]:
+        assert len(response_body[-1]['MUNFULLNAME']) > 0
+
+        if str(response_body[-1]["OFFNAME"]).find("Линия") >= 0 \
+                or str(response_body[-1]["OFFNAME"]).find("Шоссе") >= 0 \
+                or str(response_body[-1]["OFFNAME"]).find("Километр") >= 0 \
+                or str(response_body[-1]["OFFNAME"]).find("Проспект") >= 0:
+            pass
+        else:
+            assert str(response_body[-1]["MUNFULLNAME"]).find(response_body[-1]["OFFNAME"]) >= 0
+
     assert response_body[-1]["AOID"] == objectaoid
     assert response_body[-1]["OKTMO"] == OKTMO
     assert response_body[-1]["OKATO"] == OKATO
     assert response_body[-1]["FORMALNAME"] == name
 
 
-@pytest.mark.parametrize("region_code, place_aoguid, prefix, AOGUID,     AOID,       OKATO, OKTMO, FORMALNAME",
+@pytest.mark.parametrize("region_code, place_aoguid, prefix, AOGUID,     AOID,       OKATO, OKTMO, streetname",
                          get_data_for_test_regions_big(sql_strings["test_street"]["sql_request_1"],
                                                        sql_strings["test_street"]["sql_request_2"],
                                                        number_regions=count_regions,
                                                        limit_for_region=sql_strings["test_street"]["limit"]))
-def test_street_pg(region_code, place_aoguid, prefix, AOGUID, AOID, OKATO, OKTMO, FORMALNAME):
+def test_street_pg(region_code, place_aoguid, prefix, AOGUID, AOID, OKATO, OKTMO, streetname):
     url = f"{domen}/api/street?place_aoguid={place_aoguid}&prefix={prefix}"
 
     response = requests.get(url)
@@ -324,31 +384,45 @@ def test_street_pg(region_code, place_aoguid, prefix, AOGUID, AOID, OKATO, OKTMO
     if len(response_body) > 1:
 
         for i in range(len(response_body)):
-            if response_body[i]['AOID'] == AOID:
+            if response_body[i]["RELNAME"].find(streetname) >= 0 and str(response_body[i]["OKATO"]) == str(OKATO) \
+                    and str(response_body[i]["OKTMO"]) == str(OKTMO):
                 testindex = i
-    print("place_aoguid ", place_aoguid, " | prefix ", prefix, " |  RELNAME ", response_body[testindex]["RELNAME"],
-          " |  номер/место в ответе JSON - ", testindex + 1, "/", len(response_body), sep="", end="")
-    assert response.status_code == 200
-    # assert response_body[testindex]["RELNAME"] == response_body[testindex]["OFFNAME"]
-    assert str(response_body[testindex]["RELNAME"]).find(str(prefix)) >= 0  # prefix найден в RELNAME?
 
-    if str(response_body[testindex]["RELNAME"]).find(str(prefix)) >= 0:
-        print(f"\n Префикс [{prefix}] найден в строке [{response_body[testindex]['RELNAME']}]", end="")
+    print("\n aoguid ", place_aoguid, " | prefix ", prefix, " |  RELNAME ", response_body[testindex]["RELNAME"],
+          " |  номер/место в ответе JSON - ", testindex + 1, "/", len(response_body), sep="", end="")
+
+    assert response.status_code == 200
+    assert response_body[testindex]["RELNAME"].find(str(streetname)) >= 0  # streetname найден в RELNAME?
+
+    if str(response_body[testindex]["RELNAME"]).find(str(streetname)) >= 0:
+        print(f"\n Стритнейм [{streetname}] найден в RELNAME [{response_body[testindex]['RELNAME']}]", end="")
+
+    errors = False
     if str(response_body[testindex]["RELNAME"]).find(str(response_body[testindex]["OFFNAME"])) >= 0:
+        print(f"\n OFFNAME [{response_body[testindex]['OFFNAME']}] "
+              f"найден в RELNAME [{response_body[testindex]['RELNAME']}]",
+              end="")
         print(
-            f"\n OFFNAME [{response_body[testindex]['OFFNAME']}] найден в строке [{response_body[testindex]['RELNAME']}]",
-            end="")
+            f"\n MUNFULNAME {response_body[testindex]['MUNFULLNAME']} | результат поиска [{response_body[testindex]['OFFNAME']}] в MFN - {str(response_body[testindex]['MUNFULLNAME']).find(response_body[testindex]['RELNAME'])}")
+        assert str(response_body[testindex]["MUNFULLNAME"]).find("null") == -1
+        assert len(response_body[testindex]['MUNFULLNAME']) > 0
+        assert str(response_body[testindex]["MUNFULLNAME"]).find(response_body[testindex]["OFFNAME"]) >= 0
+
+    elif str(response_body[testindex]["RELNAME"]).find(str("Километр")) >= 0 \
+            or str(response_body[testindex]["RELNAME"]).find(str("Линия")) >= 0 \
+            or str(response_body[testindex]["RELNAME"]).find(str("Проспект")) >= 0 \
+            or str(response_body[testindex]["RELNAME"]).find(str("Шоссе")) >= 0:
+        pass  # "100-й Километр  = Километр 100-й"
     else:
-        print(
-            f"\n OFFNAME [{response_body[testindex]['OFFNAME']}]  HE найден в строке [{response_body[testindex]['RELNAME']}]",
-            end="")
+        errors = True
+        print(f"\n OFFNAME [{response_body[testindex]['OFFNAME']}]  "
+              f"HE найден в RELNAME [{response_body[testindex]['RELNAME']}]",
+              end="")
+
     assert str(response_body[testindex]["RELNAME"]).find(",") != 0
     assert elapsed_time <= response_time
     assert str(type(response_body[0])) == "<class 'dict'>"
-    assert response_body[testindex]["AOID"] == AOID
-    assert response_body[testindex]["OKTMO"] == OKTMO
-    assert response_body[testindex]["OKATO"] == OKATO
-    assert response_body[testindex]["FORMALNAME"] == FORMALNAME
+    assert not errors
 
 
 @pytest.mark.parametrize("regioncode, parentaoid, housenum, objectguid, postal_code, OKATO, OKTMO",
@@ -363,7 +437,8 @@ def test_find_house_aoguid(regioncode, parentaoid, housenum, objectguid, postal_
     elapsed_time = response.elapsed.total_seconds()
     response.encoding = 'utf-8'
     response_body = response.json()
-    print("\t" * 2, response_body[0]['RELNAME'], end="")
+    print("\t" * 2, response_body[0]['RELNAME'], f" objectguid - [{objectguid}]")
+    print(f"\t MUNFULLNAME - [{response_body[0]['MUNFULLNAME']}]", end="")
 
     assert response.status_code == 200
     assert elapsed_time <= response_time
@@ -374,6 +449,9 @@ def test_find_house_aoguid(regioncode, parentaoid, housenum, objectguid, postal_
     assert response_body[0]["HOUSENUM"] == str.upper(housenum)
     assert response_body[0]["POSTALCODE"] == postal_code
     assert response_body[0]["REGIONCODE"] == regioncode
+    assert response_body[0]["AOGUID"] != "null"
+    assert str(response_body[0]["MUNFULLNAME"]).find(response_body[0]["OFFNAME"]) >= 0
+    assert len(str(response_body[0]["MUNFULLNAME"])) > 0
 
 
 @pytest.mark.parametrize("regioncode, parentaoid, housenum, objectaoid, postal_code, OKATO, OKTMO",
@@ -388,8 +466,8 @@ def test_find_house_aoid(regioncode, parentaoid, housenum, objectaoid, postal_co
     elapsed_time = response.elapsed.total_seconds()
     response.encoding = 'utf-8'
     response_body = response.json()
-    print("\t", response_body['RELNAME'], end="")
-
+    print("\t", response_body['RELNAME'])
+    print(f"\t MUNFULLNAME - [{response_body['MUNFULLNAME']}]", end="")
     assert response.status_code == 200
     assert elapsed_time <= response_time
     assert str(type(response_body)) == "<class 'dict'>"
@@ -399,6 +477,8 @@ def test_find_house_aoid(regioncode, parentaoid, housenum, objectaoid, postal_co
     assert response_body["HOUSENUM"] == str.upper(housenum)
     assert response_body["POSTALCODE"] == postal_code
     assert response_body["REGIONCODE"] == regioncode
+    assert str(response_body["MUNFULLNAME"]).find(response_body["OFFNAME"]) >= 0
+    assert len(str(response_body["MUNFULLNAME"])) > 0
 
 
 @pytest.mark.parametrize("parentaoid, housenum, objectaoid,       postal_code,      OKATO,    OKTMO,parentguid",
@@ -427,6 +507,11 @@ def test_house_search_parentaoid_parenatguid(parentaoid, housenum, objectaoid, p
     assert response_body[testindex]["OKTMO"] == OKTMO
     assert response_body[testindex]["OKATO"] == OKATO
     assert response_body[testindex]["HOUSENUM"] == str.upper(housenum)
+    assert len(response_body[testindex]["STRUCNUM"])
+    assert len(response_body[testindex]["STRUCNUM"]) > 0
+    assert str(response_body[testindex]["MUNFULLNAME"]).find(response_body[testindex]["HOUSENUM"])
+    assert len(str(response_body[testindex]["MUNFULLNAME"])) > 0
+
     # test with parentguid
     url2 = f"{domen}/api/house/search?aoguid={parentguid}&housenum={str.upper(housenum)}"
 
@@ -445,10 +530,17 @@ def test_house_search_parentaoid_parenatguid(parentaoid, housenum, objectaoid, p
     assert response.status_code == 200
     assert elapsed_time <= response_time
     assert str(type(response_body[0])) == "<class 'dict'>"
-    assert response_body[testindex]["PARENTAOID"] == parentaoid
+    assert response_body[testindex]['PARENTAOID'] == parentaoid
     assert response_body[testindex]["OKTMO"] == OKTMO
     assert response_body[testindex]["OKATO"] == OKATO
     assert response_body[testindex]["HOUSENUM"] == str.upper(housenum)
+    assert response_body[testindex]["STRUCNUM"] != "null"
+    assert len(response_body[testindex]["STRUCNUM"])
+    assert len(response_body[testindex]["STRUCNUM"]) > 0
+    assert str(response_body[testindex]["MUNFULLNAME"]).find(response_body[testindex]["HOUSENUM"])
+    assert len(str(response_body[testindex]["MUNFULLNAME"])) > 0
+    print(f"\n parentaoid - [{response_body[testindex]['PARENTAOID'] }], housenum - [{response_body[testindex]['HOUSENUM']}]", \
+          f"\n MUNFULLNAME - [{response_body[testindex]['MUNFULLNAME']}]", end="")
 
 
 @pytest.mark.parametrize("region_code, prefix, AOGUID,     AOID,       OKATO, OKTMO, FORMALNAME",
@@ -480,7 +572,12 @@ def test_place_pg(region_code, prefix, AOGUID, AOID, OKATO, OKTMO, FORMALNAME):
     assert response_body[testindex]["AOID"] == AOID
     assert response_body[testindex]["OKTMO"] == OKTMO
     assert response_body[testindex]["OKATO"] == OKATO
-    assert response_body[testindex]["FORMALNAME"] == FORMALNAME
+    if response_body[testindex]["AOLEVEL"] not in [2, 6, "2", "6"]:
+        assert response_body[testindex]["FORMALNAME"] == FORMALNAME
+        assert response_body[testindex]["MUNFULLNAME"]
+        assert str(response_body[testindex]["MUNFULLNAME"]).find(prefix) >= 0
+    print(f"region_code={region_code}&prefix={prefix}", f"\n MUNFULLNAME - [{response_body[testindex]['MUNFULLNAME']}]", end="")
+
 
 
 @pytest.mark.parametrize("regioncode, name, level, isactual, parentid, parent_name", get_data_for_test_search(
@@ -510,24 +607,33 @@ def test_search_pg(regioncode, name, level, isactual, parentid, parent_name):
         name_cute = name[:len(name) - 3]
 
     for i in range(len(response_body)):
-        if str(response_body[i]["fullAddress"]).find(str(name)) >= 0:
-            error_text = False
+        if str(response_body[i]["fullAddress"]).find(str(name)) >= 0 \
+                and str(response_body[i]["munfullname"]).find(name) >= 0 \
+                and len(response_body[i]["munfullname"]) != 0:
             if response_body[i]["actStatus"] > 0:  # Запись актуальна
                 error_act = False
 
                 print(" Запрос - ", str_query, "   |  fullAddress", str(response_body[i]["fullAddress"]),
                       " | Позиция в отв. JSON ",
                       i + 1, "/", len(response_body), end="")
+                print("\n munfullname - ", response_body[i]["munfullname"], end="")
                 break
-            elif str(response_body[i]["fullAddress"]).find(
-                    str(name_cute)) >= 0:  # часть названия дочернего объекта есть в результате
-                error_text = False
+            elif str(response_body[i]["fullAddress"]).find(str(name_cute)) >= 0 \
+                    and str(response_body[i]["munfullname"]).find(name_cute) >= 0 \
+                    and len(
+                response_body[i]["munfullname"]) != 0:  # name_cute - части поисковой строки есть в результате
                 print(" Запрос - ", str_query, "   |  fullAddress", str(response_body[i]["fullAddress"]),
                       " | Позиция в отв. JSON ",
                       i + 1, "/", len(response_body), end="")
+                print("\n munfullname - ", response_body[i]["munfullname"], end="")
                 break
 
-    assert not error_text, f"Строка '{name}' не найдена в {response_body[0]['fullAddress']}"
+    assert str(response_body[i]["fullAddress"]).find(str(name_cute)) >= 0 \
+           or str(response_body[i]["fullAddress"]).find(str(name)) >= 0, \
+        f"Строка '{name}' не найдена в {response_body[i]['fullAddress']}"
+    assert str(response_body[i]['munfullname']).find(str(name_cute)) >= 0 \
+           or str(response_body[i]['munfullname']).find(str(name)) >= 0, \
+        f"Строка '{name}' не найдена в {response_body[i]['munfullname']}"
     assert not error_act
 
 
