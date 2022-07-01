@@ -1,6 +1,7 @@
 # my temp files
 123*.py
 test_12.py
+*.pdf
 *.html
 *.xhtml
 *.pyc
