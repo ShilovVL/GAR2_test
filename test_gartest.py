@@ -259,7 +259,7 @@ def test_find_addrobject_full_aoid(objectguid, objectaoid, name):
                                                        limit_for_region=sql_strings["test_find_addrobject_housecount"][
                                                            "limit"]))
 def test_find_housecount_parentaoid_parenatguid(parentaoid, parentguid, housecount):
-    # 1. Тест по parenaoid
+    # 1. Тест по parentaoid
     url = f"{domen}/api/addrobject/houseCount?aoid={parentaoid}"
 
     response = requests.get(url)
@@ -507,7 +507,7 @@ def test_house_search_parentaoid_parenatguid(parentaoid, housenum, objectaoid, p
     assert response_body[testindex]["OKTMO"] == OKTMO
     assert response_body[testindex]["OKATO"] == OKATO
     assert response_body[testindex]["HOUSENUM"] == str.upper(housenum)
-    # assert (response_body[testindex]["STRUCNUM"]) or response_body[testindex]["BUILDNUM"]
+    assert response_body[testindex]["STRUCNUM"] or response_body[testindex]["BUILDNUM"] or response_body[testindex]["HOUSENUM"]
     # assert len(response_body[testindex]["STRUCNUM"]) > 0 or len(response_body[testindex]["BUILDNUM"]) > 0
     assert str(response_body[testindex]["MUNFULLNAME"]).find(response_body[testindex]["HOUSENUM"])
     assert len(str(response_body[testindex]["MUNFULLNAME"])) > 0
@@ -535,7 +535,7 @@ def test_house_search_parentaoid_parenatguid(parentaoid, housenum, objectaoid, p
     assert response_body[testindex]["OKATO"] == OKATO
     assert response_body[testindex]["HOUSENUM"] == str.upper(housenum)
     assert response_body[testindex]["STRUCNUM"] != "null"
-    # assert len(response_body[testindex]["STRUCNUM"])
+    assert response_body[testindex]["STRUCNUM"] or response_body[testindex]["BUILDNUM"] or response_body[testindex]["HOUSENUM"]
     # assert len(response_body[testindex]["STRUCNUM"]) > 0
     assert str(response_body[testindex]["MUNFULLNAME"]).find(response_body[testindex]["HOUSENUM"])
     assert len(str(response_body[testindex]["MUNFULLNAME"])) > 0
