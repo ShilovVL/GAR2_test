@@ -18,7 +18,7 @@ def test_get_version_gar():
     assert response.status_code == 200
     assert elapsed_time <= response_time
 
-    assert str(version_gar) == str(response_body)
+    assert str(response_body) == str(version_gar)
     print(" Версия ГАР -", response_body, end="")
 
 

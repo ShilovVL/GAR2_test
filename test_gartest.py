@@ -1,4 +1,11 @@
 # -*- coding: utf-8 -*-
+"""
+Command 4 start: pytest -v --alluredir allure-results test_gartest.py
+Command 4 view result: allure serve allure-results
+
+
+"""
+
 import requests
 import json
 import pytest
@@ -21,7 +28,6 @@ def test_find_not_active_addrobject_aoguid(objectguid, typename, name):
     response_body = response.json()
     print(response_body[0]["FORMALNAME"], response_body[0]["AOID"], " Livestatus = ", response_body[0]["LIVESTATUS"],
           end="")
-
     assert response.status_code == 200
     assert elapsed_time <= response_time
     assert str(type(response_body)) == "<class 'list'>"
@@ -51,7 +57,7 @@ def test_find_not_active_addrobject_aoid(objectaoid, typename, name):
 @pytest.mark.parametrize("objectguid, name",
                          get_data_for_test(sql_strings["test_delta1_addr_object_aguid"]["sql_request"]))
 def test_delta_addrobject_aguid(objectguid, name):
-    url = f"{domen}/api/addrobject/aoguid?aoguid={objectguid}"
+    url = f"{domen}/api/addrobject/aoguid?aoguid={objectguid}&all=true"
 
     response = requests.get(url)
     elapsed_time = response.elapsed.total_seconds()
@@ -84,7 +90,7 @@ def test_delta_addrobject_aguid(objectguid, name):
                          get_data_for_test(sql_strings["test_delta2_houses_aoguid"]["sql_request"] +
                                            str(sql_strings["test_delta2_houses_aoguid"]["limit"])))
 def test_delta2_houses_aguid1(objectguid, housenum, isactive):
-    url = f"{domen}/api/house/aoguid?aoguid={objectguid}"
+    url = f"{domen}/api/house/aoguid?aoguid={objectguid}&all=true"
 
     response = requests.get(url)
     elapsed_time = response.elapsed.total_seconds()
@@ -110,7 +116,7 @@ def test_delta2_houses_aguid1(objectguid, housenum, isactive):
                                                    count_regions,
                                                    sql_strings["test_find_addrobject_aguid_aoid"]["limit"]))
 def test_find_addrobject_aguid(regioncode, objectguid, objectaoid, OKATO, OKTMO, name):
-    url = f"{domen}/api/addrobject/aoguid?aoguid={objectguid}"
+    url = f"{domen}/api/addrobject/aoguid?aoguid={objectguid}&all=true"
 
     response = requests.get(url)
     elapsed_time = response.elapsed.total_seconds()
@@ -150,7 +156,7 @@ def test_find_addrobject_aguid(regioncode, objectguid, objectaoid, OKATO, OKTMO,
                                                    count_regions,
                                                    sql_strings["test_find_addrobject_aguid_aoid"]["limit"]))
 def test_find_addrobject_aoid(regioncode, objectguid, objectaoid, OKATO, OKTMO, name):
-    url = f"{domen}/api/addrobject/aoid?aoid={objectaoid}"
+    url = f"{domen}/api/addrobject/aoid?aoid={objectaoid}&all=true"
 
     response = requests.get(url)
     elapsed_time = response.elapsed.total_seconds()
@@ -183,8 +189,7 @@ def test_find_addrobject_aoid(regioncode, objectguid, objectaoid, OKATO, OKTMO, 
                          get_data_for_test_regions_big(sql_strings["test_find_childcount"]["sql_request_1"],
                                                        sql_strings["test_find_childcount"]["sql_request_2"],
                                                        number_regions=count_regions,
-                                                       limit_for_region=sql_strings["test_find_addrobject_aguid_aoid"][
-                                                           "limit"]))
+                                                       limit_for_region=sql_strings["test_find_childcount"]["limit"]))
 def test_find_chilcount_parentaoid_parenatguid(parentaoid, parentguid, childcount):
     # 1. Тест по parenaoid
     url = f"{domen}/api/addrobject/childCount?aoid={parentaoid}"
@@ -206,7 +211,7 @@ def test_find_chilcount_parentaoid_parenatguid(parentaoid, parentguid, childcoun
     elapsed_time = response.elapsed.total_seconds()
     response.encoding = 'utf-8'
     response_body = response.json()
-    print(" Childcount -", response_body, end="")
+    print(f" Parentguid - [{parentguid}], Parentaoid - [{parentaoid}], Childcount -", response_body, end="")
 
     assert response.status_code == 200
     assert elapsed_time <= response_time
@@ -259,7 +264,7 @@ def test_find_addrobject_full_aoid(objectguid, objectaoid, name):
                                                        limit_for_region=sql_strings["test_find_addrobject_housecount"][
                                                            "limit"]))
 def test_find_housecount_parentaoid_parenatguid(parentaoid, parentguid, housecount):
-    # 1. Тест по parentaoid
+    # 1. Тест по parent  aoid
     url = f"{domen}/api/addrobject/houseCount?aoid={parentaoid}"
 
     response = requests.get(url)
@@ -373,7 +378,7 @@ def test_find_addrobject_row_guid(objectguid, objectaoid, parentaoid, OKATO, OKT
                                                        number_regions=count_regions,
                                                        limit_for_region=sql_strings["test_street"]["limit"]))
 def test_street_pg(region_code, place_aoguid, prefix, AOGUID, AOID, OKATO, OKTMO, streetname):
-    url = f"{domen}/api/street?place_aoguid={place_aoguid}&prefix={prefix}"
+    url = f"{domen}/api/street?place_aoguid={place_aoguid}&prefix={prefix}&all=true"
 
     response = requests.get(url)
     elapsed_time = response.elapsed.total_seconds()
@@ -411,6 +416,7 @@ def test_street_pg(region_code, place_aoguid, prefix, AOGUID, AOID, OKATO, OKTMO
     elif str(response_body[testindex]["RELNAME"]).find(str("Километр")) >= 0 \
             or str(response_body[testindex]["RELNAME"]).find(str("Линия")) >= 0 \
             or str(response_body[testindex]["RELNAME"]).find(str("Проспект")) >= 0 \
+            or str(response_body[testindex]["RELNAME"]).find(str("Тракт")) >= 0 \
             or str(response_body[testindex]["RELNAME"]).find(str("Шоссе")) >= 0:
         pass  # "100-й Километр  = Километр 100-й"
     else:
@@ -431,7 +437,7 @@ def test_street_pg(region_code, place_aoguid, prefix, AOGUID, AOID, OKATO, OKTMO
                                                        number_regions=count_regions,
                                                        limit_for_region=sql_strings["test_street"]["limit"]))
 def test_find_house_aoguid(regioncode, parentaoid, housenum, objectguid, postal_code, OKATO, OKTMO):
-    url = f"{domen}/api/house/aoguid?aoguid={objectguid}"
+    url = f"{domen}/api/house/aoguid?aoguid={objectguid}&all=true"
 
     response = requests.get(url)
     elapsed_time = response.elapsed.total_seconds()
@@ -460,7 +466,7 @@ def test_find_house_aoguid(regioncode, parentaoid, housenum, objectguid, postal_
                                                        number_regions=count_regions,
                                                        limit_for_region=sql_strings["test_find_house_aoid"]["limit"]))
 def test_find_house_aoid(regioncode, parentaoid, housenum, objectaoid, postal_code, OKATO, OKTMO):
-    url = f"{domen}/api/house/aoid?aoid={objectaoid}"
+    url = f"{domen}/api/house/aoid?aoid={objectaoid}&all=true"
 
     response = requests.get(url)
     elapsed_time = response.elapsed.total_seconds()
@@ -486,7 +492,7 @@ def test_find_house_aoid(regioncode, parentaoid, housenum, objectaoid, postal_co
                              sql_strings["test_house_search"]["sql_request"] + sql_strings["test_house_search"][
                                  "limit"]))
 def test_house_search_parentaoid_parenatguid(parentaoid, housenum, objectaoid, postal_code, OKATO, OKTMO, parentguid):
-    url = f"{domen}/api/house/search?aoid={parentaoid}&housenum={str.upper(housenum)}"
+    url = f"{domen}/api/house/search?aoid={parentaoid}&housenum={str.upper(housenum)}&all=true"
 
     response = requests.get(url)
     elapsed_time = response.elapsed.total_seconds()
@@ -507,7 +513,8 @@ def test_house_search_parentaoid_parenatguid(parentaoid, housenum, objectaoid, p
     assert response_body[testindex]["OKTMO"] == OKTMO
     assert response_body[testindex]["OKATO"] == OKATO
     assert response_body[testindex]["HOUSENUM"] == str.upper(housenum)
-    assert response_body[testindex]["STRUCNUM"] or response_body[testindex]["BUILDNUM"] or response_body[testindex]["HOUSENUM"]
+    assert response_body[testindex]["STRUCNUM"] or response_body[testindex]["BUILDNUM"] or response_body[testindex][
+        "HOUSENUM"]
     # assert len(response_body[testindex]["STRUCNUM"]) > 0 or len(response_body[testindex]["BUILDNUM"]) > 0
     assert str(response_body[testindex]["MUNFULLNAME"]).find(response_body[testindex]["HOUSENUM"])
     assert len(str(response_body[testindex]["MUNFULLNAME"])) > 0
@@ -535,12 +542,14 @@ def test_house_search_parentaoid_parenatguid(parentaoid, housenum, objectaoid, p
     assert response_body[testindex]["OKATO"] == OKATO
     assert response_body[testindex]["HOUSENUM"] == str.upper(housenum)
     assert response_body[testindex]["STRUCNUM"] != "null"
-    assert response_body[testindex]["STRUCNUM"] or response_body[testindex]["BUILDNUM"] or response_body[testindex]["HOUSENUM"]
+    assert response_body[testindex]["STRUCNUM"] or response_body[testindex]["BUILDNUM"] or response_body[testindex][
+        "HOUSENUM"]
     # assert len(response_body[testindex]["STRUCNUM"]) > 0
     assert str(response_body[testindex]["MUNFULLNAME"]).find(response_body[testindex]["HOUSENUM"])
     assert len(str(response_body[testindex]["MUNFULLNAME"])) > 0
-    print(f"\n parentaoid - [{response_body[testindex]['PARENTAOID'] }], housenum - [{response_body[testindex]['HOUSENUM']}]", \
-          f"\n MUNFULLNAME - [{response_body[testindex]['MUNFULLNAME']}]", end="")
+    print(
+        f"\n parentaoid - [{response_body[testindex]['PARENTAOID']}], housenum - [{response_body[testindex]['HOUSENUM']}]", \
+        f"\n MUNFULLNAME - [{response_body[testindex]['MUNFULLNAME']}]", end="")
 
 
 @pytest.mark.parametrize("region_code, prefix, AOGUID,     AOID,       OKATO, OKTMO, FORMALNAME",
@@ -549,7 +558,7 @@ def test_house_search_parentaoid_parenatguid(parentaoid, housenum, objectaoid, p
                                                        number_regions=count_regions,
                                                        limit_for_region=sql_strings["test_place"]["limit"]))
 def test_place_pg(region_code, prefix, AOGUID, AOID, OKATO, OKTMO, FORMALNAME):
-    url = f"{domen}/api/place?region_code={region_code}&prefix={prefix}"
+    url = f"{domen}/api/place?region_code={region_code}&prefix={prefix}&all=true"
 
     response = requests.get(url)
     elapsed_time = response.elapsed.total_seconds()
@@ -576,8 +585,9 @@ def test_place_pg(region_code, prefix, AOGUID, AOID, OKATO, OKTMO, FORMALNAME):
         assert response_body[testindex]["FORMALNAME"] == FORMALNAME
         assert response_body[testindex]["MUNFULLNAME"]
         assert str(response_body[testindex]["MUNFULLNAME"]).find(prefix) >= 0
-    print(f"region_code={region_code}&prefix={prefix}", f"\n MUNFULLNAME - [{response_body[testindex]['MUNFULLNAME']}]", end="")
 
+    print(f"region_code={region_code}&prefix={prefix}", f"\n MUNFULLNAME - [{response_body[testindex]['MUNFULLNAME']}]",
+          end="")
 
 
 @pytest.mark.parametrize("regioncode, name, level, isactual, parentid, parent_name", get_data_for_test_search(
@@ -587,7 +597,7 @@ def test_place_pg(region_code, prefix, AOGUID, AOID, OKATO, OKTMO, FORMALNAME):
     limit_for_region=sql_strings["test_search"]["limit"]))
 def test_search_pg(regioncode, name, level, isactual, parentid, parent_name):
     str_query = str(parent_name + " " + name)
-    url = f"{domen}/api/addrobject/search?query={str_query}"
+    url = f"{domen}/api/addrobject/search?query={str_query}&all=true"
     response = requests.get(url)
     elapsed_time = response.elapsed.total_seconds()
     assert response.status_code == 200
@@ -639,7 +649,7 @@ def test_search_pg(regioncode, name, level, isactual, parentid, parent_name):
 
 def test_search_one_const_obj(name="2-я Школьная", parent_name="Кемерово"):
     str_query = str(parent_name + " " + name)
-    url = f"{domen}/api/addrobject/search?query={str_query}"
+    url = f"{domen}/api/addrobject/search?query={str_query}&all=true"
 
     response = requests.get(url)
     elapsed_time = response.elapsed.total_seconds()

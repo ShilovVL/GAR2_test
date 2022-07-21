@@ -1,0 +1,38 @@
+import requests
+import json
+import pytest
+from sql_strings import sql_strings
+from sql_connector import get_data_for_test, get_data_for_test_regions, get_data_for_test_regions_big
+from sql_connector import get_data_for_test_search
+from urls import domen
+from params import response_time, count_regions
+
+
+@pytest.mark.parametrize("regioncode, parentaoid, housenum, objectguid, postal_code, OKATO, OKTMO",
+                         get_data_for_test_regions_big(sql_strings["test_find_house_aoguid"]["sql_request_1"],
+                                                       sql_strings["test_find_house_aoguid"]["sql_request_2"],
+                                                       number_regions=count_regions,
+                                                       limit_for_region=sql_strings["test_street"]["limit"]))
+def test_find_house_aoguid(regioncode, parentaoid, housenum, objectguid, postal_code, OKATO, OKTMO):
+    url = f"{domen}/api/house/aoguid?aoguid={objectguid}&all=true"
+
+    response = requests.get(url)
+    elapsed_time = response.elapsed.total_seconds()
+    response.encoding = 'utf-8'
+    response_body = response.json()
+    print("\t" * 2, response_body[0]['RELNAME'], f" objectguid - [{objectguid}]")
+    print(f"\t MUNFULLNAME - [{response_body[0]['MUNFULLNAME']}]", end="")
+
+    assert response.status_code == 200
+    assert elapsed_time <= response_time
+    assert str(type(response_body[0])) == "<class 'dict'>"
+    assert response_body[0]["PARENTAOID"] == parentaoid
+    assert response_body[0]["OKTMO"] == OKTMO
+    assert response_body[0]["OKATO"] == OKATO
+    assert response_body[0]["HOUSENUM"] == str.upper(housenum)
+    assert response_body[0]["POSTALCODE"] == postal_code
+    assert response_body[0]["REGIONCODE"] == regioncode
+    assert response_body[0]["AOGUID"] != "null"
+    assert str(response_body[0]["MUNFULLNAME"]).find(response_body[0]["OFFNAME"]) >= 0
+    assert len(str(response_body[0]["MUNFULLNAME"])) > 0
+

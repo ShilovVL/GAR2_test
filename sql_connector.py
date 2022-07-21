@@ -11,7 +11,7 @@ def get_data_for_test(sql_string):
                 ('195.19.108.146', 22),
                 ssh_username=SECRET.DATABASE_USER,
                 ssh_password=SECRET.DATABASE_PASSWORD,
-                remote_bind_address=('192.168.14.6', 5432)) as server:
+                remote_bind_address=('192.168.14.4', 5432)) as server:
 
             server.start()
 
@@ -48,7 +48,7 @@ def get_data_for_test_regions(sql_string, number_regions=30, limit_for_region=20
                 ('195.19.108.146', 22),
                 ssh_username=SECRET.DATABASE_USER,
                 ssh_password=SECRET.DATABASE_PASSWORD,
-                remote_bind_address=('192.168.14.6', 5432)) as server:
+                remote_bind_address=('192.168.14.4', 5432)) as server:
             # '192.168.249.13'
             server.start()
 
@@ -100,7 +100,7 @@ def get_data_for_test_regions_big(sql_string1, sql_string2, number_regions=30, l
                 ('195.19.108.146', 22),
                 ssh_username=SECRET.DATABASE_USER,
                 ssh_password=SECRET.DATABASE_PASSWORD,
-                remote_bind_address=('192.168.14.6', 5432)) as server:
+                remote_bind_address=('192.168.14.4', 5432)) as server:
             # '192.168.249.13'
             server.start()
 
@@ -153,7 +153,7 @@ def get_data_for_test_search(sql_string1, sql_string2, number_regions=30, limit_
                 ('195.19.108.146', 22),
                 ssh_username=SECRET.DATABASE_USER,
                 ssh_password=SECRET.DATABASE_PASSWORD,
-                remote_bind_address=('192.168.14.6', 5432)) as server:
+                remote_bind_address=('192.168.14.4', 5432)) as server:
             # '192.168.249.13'
             server.start()
 
@@ -217,5 +217,5 @@ def get_data_for_test_search(sql_string1, sql_string2, number_regions=30, limit_
 
 # print(len(get_data_for_test(sql_strings["test_house_search"]["sql_request"] + sql_strings["test_house_search"]["limit"])))
 # print(len(get_data_for_test_regions(sql_strings["test_house_search"]["sql_request"], 50, 100)))
-# print(get_data_for_test_regions_big(sql_strings["test_house_aoguid_not_null"]["sql_request_1"], sql_strings["test_house_aoguid_not_null"]["sql_request_2"]))
+#print(get_data_for_test_regions_big(sql_strings["test_find_addrobject_housecount"]["sql_request_1"], sql_strings["test_find_addrobject_housecount"]["sql_request_2"], number_regions=25, limit_for_region=sql_strings["test_find_addrobject_housecount"]["limit"]))
 # print(get_data_for_test_search(sql_strings["test_search"]["sql_request_1"],sql_strings["test_search"]["sql_request_2"]))

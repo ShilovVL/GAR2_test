@@ -13,7 +13,7 @@ GAR*
 .DS_Store
 
 /env
-
+/allure-results
 /.env
 environment.env
 /main.py
