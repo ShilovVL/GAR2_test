@@ -12,6 +12,7 @@ from params import response_time, count_regions
                          get_data_for_test(sql_strings["test_find_not_active_aguid"]["sql_request"] +
                                            str(sql_strings["test_find_not_active_aguid"]["limit"])))
 def test_find_not_active_addrobject_aoguid(objectguid, typename, name):
+    print(objectguid, " ", end="")
     url = f"{domen}/api/addrobject/aoguid?aoguid={objectguid}&all=true"
 
     response = requests.get(url)

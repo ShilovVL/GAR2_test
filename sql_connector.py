@@ -24,12 +24,15 @@ def get_data_for_test(sql_string):
                 'host': 'localhost',
                 'port': server.local_bind_port
             }
+
             conn = psycopg2.connect(**params)
+
             curs = conn.cursor()
 
             data_for_test = []
-            # print(sql_string)
+
             curs.execute(sql_string)
+
             rows = curs.fetchall()
 
             for y in rows:
@@ -38,8 +41,11 @@ def get_data_for_test(sql_string):
             server.stop()
             return data_for_test
 
-    except:
-        print("Fail connection")
+    # except:
+    #     print("Fail connection")
+    except Exception as err:
+        print("Oops! An exception has occured:", err)
+        print("Exception TYPE:", type(err))
 
 
 def get_data_for_test_regions(sql_string, number_regions=30, limit_for_region=20):
@@ -59,7 +65,8 @@ def get_data_for_test_regions(sql_string, number_regions=30, limit_for_region=20
                 'user': SECRET.DATABASE_USER,
                 'password': SECRET.DATABASE_PASSWORD,
                 'host': 'localhost',
-                'port': server.local_bind_port
+                'port': server.local_bind_port,
+                'sslmode': 'disable'
             }
             conn = psycopg2.connect(**params)
             curs = conn.cursor()
@@ -90,8 +97,11 @@ def get_data_for_test_regions(sql_string, number_regions=30, limit_for_region=20
             server.stop()
             return data_for_test
 
-    except:
+
+    except Exception as err:
         print("Fail connection")
+        print("Oops! An exception has occured:", err)
+        print("Exception TYPE:", type(err))
 
 
 def get_data_for_test_regions_big(sql_string1, sql_string2, number_regions=30, limit_for_region=20):
@@ -143,8 +153,11 @@ def get_data_for_test_regions_big(sql_string1, sql_string2, number_regions=30, l
             server.stop()
             return data_for_test
 
-    except:
+
+    except Exception as err:
         print("Fail connection")
+        print("Oops! An exception has occured:", err)
+        print("Exception TYPE:", type(err))
 
 
 def get_data_for_test_search(sql_string1, sql_string2, number_regions=30, limit_for_region=20):
@@ -208,14 +221,17 @@ def get_data_for_test_search(sql_string1, sql_string2, number_regions=30, limit_
             server.stop()
             return data_for_test
 
-    except:
+
+    except Exception as err:
         print("Fail connection")
+        print("Oops! An exception has occured:", err)
+        print("Exception TYPE:", type(err))
 
 
 # print(sql_strings["test_house_search"]["sql_request"])
-# print(get_data_for_test(sql_string))
+# print(get_data_for_test(sql_strings["test_find_regions"]["sql_request"]))
 
 # print(len(get_data_for_test(sql_strings["test_house_search"]["sql_request"] + sql_strings["test_house_search"]["limit"])))
 # print(len(get_data_for_test_regions(sql_strings["test_house_search"]["sql_request"], 50, 100)))
-#print(get_data_for_test_regions_big(sql_strings["test_find_addrobject_housecount"]["sql_request_1"], sql_strings["test_find_addrobject_housecount"]["sql_request_2"], number_regions=25, limit_for_region=sql_strings["test_find_addrobject_housecount"]["limit"]))
+# print(get_data_for_test_regions_big(sql_strings["test_find_addrobject_housecount"]["sql_request_1"], sql_strings["test_find_addrobject_housecount"]["sql_request_2"], number_regions=25, limit_for_region=sql_strings["test_find_addrobject_housecount"]["limit"]))
 # print(get_data_for_test_search(sql_strings["test_search"]["sql_request_1"],sql_strings["test_search"]["sql_request_2"]))

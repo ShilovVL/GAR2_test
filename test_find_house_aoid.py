@@ -21,7 +21,6 @@ def test_find_house_aoid(regioncode, parentaoid, housenum, objectaoid, postal_co
     response.encoding = 'utf-8'
     response_body = response.json()
     print("\t", response_body['RELNAME'])
-    print(f"\t MUNFULLNAME - [{response_body['MUNFULLNAME']}]", end="")
     assert response.status_code == 200
     assert elapsed_time <= response_time
     assert str(type(response_body)) == "<class 'dict'>"
@@ -31,6 +30,4 @@ def test_find_house_aoid(regioncode, parentaoid, housenum, objectaoid, postal_co
     assert response_body["HOUSENUM"] == str.upper(housenum)
     assert response_body["POSTALCODE"] == postal_code
     assert response_body["REGIONCODE"] == regioncode
-    assert str(response_body["MUNFULLNAME"]).find(response_body["OFFNAME"]) >= 0
-    assert len(str(response_body["MUNFULLNAME"])) > 0
 

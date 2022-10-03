@@ -59,10 +59,34 @@ def test_regions():
                 assert response_body[y]["OKTMO"] == sql_data[i][3]
                 assert response_body[y]["FORMALNAME"] == sql_data[i][4]
                 assert response_body[y]["REGIONCODE"] == sql_data[i][0]
-                assert str(response_body[y]["MUNFULLNAME"]).find(response_body[y]["FORMALNAME"]) >= 0
-                assert len(str(response_body[y]["MUNFULLNAME"])) > 0
                 print("", response_body[y]['RELNAME'], " Ok")
-                print(f" MUNFULLNAME - [{response_body[y]['MUNFULLNAME']}]", end="\n\n")
+
+                break
+
+
+def test_regions_mun():
+    url = f"{domen}/api/regions&munHierarchy=true"  # Один запрос выводит список всех регионов РФ
+
+    response = requests.get(url)
+    elapsed_time = response.elapsed.total_seconds()
+    response.encoding = 'utf-8'
+    response_body = response.json()
+
+    assert response.status_code == 200
+    assert elapsed_time <= response_time
+    sql_data = get_data_for_test(sql_strings["test_find_regions"]["sql_request"])
+    print("")
+    response_lenght = len(response_body)
+
+    for i in range(response_lenght):
+        for y in range(response_lenght):
+            if response_body[y]["AOID"] == sql_data[i][1]:
+                assert response_body[y]["OKATO"] == sql_data[i][2]
+                assert response_body[y]["OKTMO"] == sql_data[i][3]
+                assert response_body[y]["FORMALNAME"] == sql_data[i][4]
+                assert response_body[y]["REGIONCODE"] == sql_data[i][0]
+                print("", response_body[y]['RELNAME'], " Ok")
+
                 break
 
 
@@ -76,8 +100,6 @@ def test_region_code(regioncode, objectaoid, OKATO, OKTMO, name):
     response.encoding = 'utf-8'
     response_body = response.json()
     print("\t" * 2, response_body[0]['RELNAME'])
-    print(f"\t 'MUNFULLNAME' - [{response_body[0]['MUNFULLNAME']}]", end="")
-
     assert response.status_code == 200
     assert elapsed_time <= response_time
     assert str(type(response_body[0])) == "<class 'dict'>"
@@ -86,6 +108,23 @@ def test_region_code(regioncode, objectaoid, OKATO, OKTMO, name):
     assert response_body[0]["OKATO"] == OKATO
     assert response_body[0]["FORMALNAME"] == name
     assert response_body[0]["REGIONCODE"] == regioncode
-    assert str(response_body[0]["MUNFULLNAME"]).find(response_body[0]["FORMALNAME"]) >= 0
-    assert len(str(response_body[0]["MUNFULLNAME"])) > 0
 
+
+@pytest.mark.parametrize("regioncode, objectaoid, OKATO, OKTMO, name",
+                         get_data_for_test(sql_strings["test_find_regions"]["sql_request"]))
+def test_region_code_mun(regioncode, objectaoid, OKATO, OKTMO, name):
+    url = f"{domen}/api/region/code?code={regioncode}&munHierarchy=true"
+
+    response = requests.get(url)
+    elapsed_time = response.elapsed.total_seconds()
+    response.encoding = 'utf-8'
+    response_body = response.json()
+    print("\t" * 2, response_body[0]['RELNAME'])
+    assert response.status_code == 200
+    assert elapsed_time <= response_time
+    assert str(type(response_body[0])) == "<class 'dict'>"
+    assert response_body[0]["AOID"] == objectaoid
+    assert response_body[0]["OKTMO"] == OKTMO
+    assert response_body[0]["OKATO"] == OKATO
+    assert response_body[0]["FORMALNAME"] == name
+    assert response_body[0]["REGIONCODE"] == regioncode

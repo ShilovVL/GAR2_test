@@ -3,8 +3,11 @@
 test_12.py
 *.pdf
 *.html
+*.htm
 *.xhtml
 *.pyc
+*.zip
+*.rar
 *.egg-info
 GAR3.3.1_1
 GAR3.3.1_2

@@ -21,7 +21,6 @@ def test_find_house_aoguid(regioncode, parentaoid, housenum, objectguid, postal_
     response.encoding = 'utf-8'
     response_body = response.json()
     print("\t" * 2, response_body[0]['RELNAME'], f" objectguid - [{objectguid}]")
-    print(f"\t MUNFULLNAME - [{response_body[0]['MUNFULLNAME']}]", end="")
 
     assert response.status_code == 200
     assert elapsed_time <= response_time
@@ -32,7 +31,4 @@ def test_find_house_aoguid(regioncode, parentaoid, housenum, objectguid, postal_
     assert response_body[0]["HOUSENUM"] == str.upper(housenum)
     assert response_body[0]["POSTALCODE"] == postal_code
     assert response_body[0]["REGIONCODE"] == regioncode
-    assert response_body[0]["AOGUID"] != "null"
-    assert str(response_body[0]["MUNFULLNAME"]).find(response_body[0]["OFFNAME"]) >= 0
-    assert len(str(response_body[0]["MUNFULLNAME"])) > 0
-
+    assert response_body[0]["AOGUID"] is not None

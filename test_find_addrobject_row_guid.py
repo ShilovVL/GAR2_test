@@ -31,18 +31,6 @@ def test_find_addrobject_row_guid(objectguid, objectaoid, parentaoid, OKATO, OKT
     assert elapsed_time <= response_time
     assert found_parent
     assert str(type(response_body[0])) == "<class 'dict'>"
-
-    if response_body[-1]["AOLEVEL"] not in [2, 6, "2", "6"]:
-        assert len(response_body[-1]['MUNFULLNAME']) > 0
-
-        if str(response_body[-1]["OFFNAME"]).find("Линия") >= 0 \
-                or str(response_body[-1]["OFFNAME"]).find("Шоссе") >= 0 \
-                or str(response_body[-1]["OFFNAME"]).find("Километр") >= 0 \
-                or str(response_body[-1]["OFFNAME"]).find("Проспект") >= 0:
-            pass
-        else:
-            assert str(response_body[-1]["MUNFULLNAME"]).find(response_body[-1]["OFFNAME"]) >= 0
-
     assert response_body[-1]["AOID"] == objectaoid
     assert response_body[-1]["OKTMO"] == OKTMO
     assert response_body[-1]["OKATO"] == OKATO
