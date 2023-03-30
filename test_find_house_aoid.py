@@ -14,7 +14,7 @@ from params import response_time, count_regions
                                                        number_regions=count_regions,
                                                        limit_for_region=sql_strings["test_find_house_aoid"]["limit"]))
 def test_find_house_aoid(regioncode, parentaoid, housenum, objectaoid, postal_code, OKATO, OKTMO):
-    url = f"{domen}/api/house/aoid?aoid={objectaoid}&all=true"
+    url = f"{domen}/api/house/aoid?aoid={objectaoid}"
 
     response = requests.get(url)
     elapsed_time = response.elapsed.total_seconds()

@@ -13,7 +13,7 @@ from params import response_time, count_regions
                                                    count_regions,
                                                    sql_strings["test_find_addrobject_full"]["limit"]))
 def test_find_addrobject_full_aoid(objectguid, objectaoid, name):
-    url = f"{domen}/api/addrobject/full?aoid={objectaoid}&munHierarchy=true"
+    url = f"{domen}/api/addrobject/full?aoid={objectaoid}"
 
     response = requests.get(url)
     elapsed_time = response.elapsed.total_seconds()

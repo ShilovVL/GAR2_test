@@ -14,7 +14,7 @@ from params import response_time, count_regions
                                                    sql_strings["test_find_addrobj_row"]["limit"]))
 def test_find_addrobject_row_aoid(objectguid, objectaoid, parentaoid, OKATO, OKTMO, name):
     url = f"{domen}/api/addrobject/row?aoid={objectaoid}"
-
+    print(f"\n objectaoid - [{objectaoid}]")
     response = requests.get(url)
     elapsed_time = response.elapsed.total_seconds()
     response.encoding = 'utf-8'

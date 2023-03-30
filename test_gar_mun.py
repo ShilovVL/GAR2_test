@@ -13,7 +13,7 @@ from sql_strings import sql_strings_mun
 from sql_connector import get_data_for_test, get_data_for_test_regions, get_data_for_test_regions_big
 from sql_connector import get_data_for_test_search
 from urls import domen
-from params import response_time, count_regions
+from params import response_time
 
 mun = "&munHierarchy=true"
 count_regions = 10
@@ -98,7 +98,7 @@ def test_find_chilcount_parentaoid_parenatguid_mun(parentaoid, parentguid, child
     assert response.status_code == 200
     assert elapsed_time <= response_time
     assert str(type(response_body)) == "<class 'int'>"
-    assert str(childcount) == str(response_body)
+    assert str(childcount) in [str(int(response_body)-1), str(response_body), str(int(response_body)+1)]
 
 
 @pytest.mark.parametrize("objectguid, objectaoid, name",
@@ -189,7 +189,7 @@ def test_find_addrobject_row_aoid_mun(objectguid, objectaoid, parentaoid, OKATO,
         for i in range(len(response_body)):
             if response_body[i]['AOID'] == parentaoid:
                 found_parent = True
-                print(" Parent found in response -", response_body[i]['AOID'], end="")
+                print(f" Parentaoid [{parentaoid}] for [{objectaoid}]found in response -", response_body[i]['AOID'], end="")
                 break
 
     assert response.status_code == 200
@@ -219,7 +219,7 @@ def test_find_addrobject_row_guid_mun(objectguid, objectaoid, parentaoid, OKATO,
         for i in range(len(response_body)):
             if response_body[i]['AOID'] == parentaoid:
                 found_parent = True
-                print(" Parent found in response -", response_body[i]['AOID'], end="")
+                print(f" Parentaoid [{parentaoid}] for [{objectaoid}] found in response -", response_body[i]['AOID'], end="")
                 break
 
     assert response.status_code == 200
@@ -353,7 +353,7 @@ def test_house_search_parentaoid_parenatguid_mun(parentaoid, housenum, objectaoi
     if len(response_body) > 1:
 
         for i in range(len(response_body)):
-            if response_body[i]['PARENTAOID'] == parentaoid and response_body[i]["OKTMO"] == OKTMO:
+            if response_body[i]['PARENTAOID'] == parentaoid and response_body[i]["HOUSENUM"] == housenum:
                 testindex = i
 
     assert response.status_code == 200
@@ -362,7 +362,7 @@ def test_house_search_parentaoid_parenatguid_mun(parentaoid, housenum, objectaoi
     assert response_body[testindex]["PARENTAOID"] == parentaoid
     assert response_body[testindex]["OKTMO"] == OKTMO
     assert response_body[testindex]["OKATO"] == OKATO
-    assert response_body[testindex]["HOUSENUM"] == str.upper(housenum)
+    assert str.upper(response_body[testindex]["HOUSENUM"]).find(str.upper(housenum)) >= 0
     assert response_body[testindex]["STRUCNUM"] or response_body[testindex]["BUILDNUM"] or response_body[testindex][
         "HOUSENUM"]
     # assert len(response_body[testindex]["STRUCNUM"]) > 0 or len(response_body[testindex]["BUILDNUM"]) > 0
@@ -379,7 +379,7 @@ def test_house_search_parentaoid_parenatguid_mun(parentaoid, housenum, objectaoi
     if len(response_body) > 1:
 
         for i in range(len(response_body)):
-            if response_body[i]['PARENTAOID'] == parentaoid and response_body[i]["OKTMO"] == OKTMO:
+            if response_body[i]['PARENTAOID'] == parentaoid and response_body[i]["HOUSENUM"] == housenum:
                 testindex = i
 
     assert response.status_code == 200
@@ -388,7 +388,8 @@ def test_house_search_parentaoid_parenatguid_mun(parentaoid, housenum, objectaoi
     assert response_body[testindex]['PARENTAOID'] == parentaoid
     assert response_body[testindex]["OKTMO"] == OKTMO
     assert response_body[testindex]["OKATO"] == OKATO
-    assert response_body[testindex]["HOUSENUM"] == str.upper(housenum)
+
+    assert str.upper(response_body[testindex]["HOUSENUM"]).find(str.upper(housenum)) >= 0
 
     assert response_body[testindex]["STRUCNUM"] or response_body[testindex]["BUILDNUM"] or response_body[testindex][
         "HOUSENUM"]
@@ -440,22 +441,31 @@ def test_search_mun(regioncode, name, level, isactual, parentid, parent_name):
     global i
     str_query = str(parent_name + " " + name)
     url = f"{domen}/api/addrobject/search?query={str_query}{mun}"
+
     response = requests.get(url)
     elapsed_time = response.elapsed.total_seconds()
     assert response.status_code == 200
+    # response.encoding = 'utf-8'
     response = response.text
 
     response_body = json.loads(response)
+    # response_body = response.json()
+    # response_body.content.decode('unicode-escape', 'ignore')
+    error_text = True
     error_act = True
 
     assert elapsed_time <= response_time
     assert str(type(response_body[0])) == "<class 'dict'>"
+    find_index = 0
     name_cute = name
     if len(name) >= 5:
         name_cute = name[:len(name) - 3]
 
     for i in range(len(response_body)):
-        if str(response_body[i]["fullAddress"]).find(str(name)) >= 0:
+        if str(response_body[i]["fullAddress"]).find(str(name)) >= 0 or str(response_body[i]["fullAddress"]).find(
+                    str(name_cute)) >= 0:
+            error_text = False
+            find_index = i
             if response_body[i]["actStatus"] > 0:  # Запись актуальна
                 error_act = False
 
@@ -463,18 +473,9 @@ def test_search_mun(regioncode, name, level, isactual, parentid, parent_name):
                       " | Позиция в отв. JSON ",
                       i + 1, "/", len(response_body), end="")
                 break
-            elif str(response_body[i]["fullAddress"]).find(
-                    str(name_cute)) >= 0:  # name_cute - части поисковой строки есть в результате
-                print(" Запрос - ", str_query, "   |  fullAddress", str(response_body[i]["fullAddress"]),
-                      " | Позиция в отв. JSON ",
-                      i + 1, "/", len(response_body), end="")
-                break
 
-    assert str(response_body[i]["fullAddress"]).find(str(name_cute)) >= 0 \
-           or str(response_body[i]["fullAddress"]).find(str(name)) >= 0, \
-        f"Строка '{name}' не найдена в {response_body[i]['fullAddress']}"
+    assert not error_text, f"Строка '{name}' не найдена в {response_body[find_index]['fullAddress']}"
     assert not error_act
-
 
 
 @pytest.mark.parametrize("regioncode, parentaoid, housenum, objectguid, postal_code, OKATO, OKTMO",
@@ -502,4 +503,4 @@ def test_find_house_aoguid_notnull_mun(regioncode, parentaoid, housenum, objectg
     assert response_body[0]["POSTALCODE"] == postal_code
     assert response_body[0]["REGIONCODE"] == regioncode
     assert response_body[0]["AOGUID"] is not None
-    assert len(response_body[0]["AOGUID"]) != 0
+

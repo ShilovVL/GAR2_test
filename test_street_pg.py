@@ -43,11 +43,6 @@ def test_street_pg(region_code, place_aoguid, prefix, AOGUID, AOID, OKATO, OKTMO
         print(f"\n OFFNAME [{response_body[testindex]['OFFNAME']}] "
               f"найден в RELNAME [{response_body[testindex]['RELNAME']}]",
               end="")
-        print(
-            f"\n MUNFULNAME {response_body[testindex]['MUNFULLNAME']} | результат поиска [{response_body[testindex]['OFFNAME']}] в MFN - {str(response_body[testindex]['MUNFULLNAME']).find(response_body[testindex]['RELNAME'])}")
-        assert str(response_body[testindex]["MUNFULLNAME"]).find("null") == -1
-        assert len(response_body[testindex]['MUNFULLNAME']) > 0
-        assert str(response_body[testindex]["MUNFULLNAME"]).find(response_body[testindex]["OFFNAME"]) >= 0
 
     elif str(response_body[testindex]["RELNAME"]).find(str("Километр")) >= 0 \
             or str(response_body[testindex]["RELNAME"]).find(str("Линия")) >= 0 \

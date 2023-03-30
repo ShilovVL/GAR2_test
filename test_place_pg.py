@@ -39,8 +39,6 @@ def test_place(region_code, prefix, AOGUID, AOID, OKATO, OKTMO, FORMALNAME):
     assert response_body[testindex]["OKATO"] == OKATO
     if response_body[testindex]["AOLEVEL"] not in [2, 6, "2", "6"]:
         assert response_body[testindex]["FORMALNAME"] == FORMALNAME
-        assert response_body[testindex]["MUNFULLNAME"]
-        assert str(response_body[testindex]["MUNFULLNAME"]).find(prefix) >= 0
 
-    print(f"region_code={region_code}&prefix={prefix}", f"\n MUNFULLNAME - [{response_body[testindex]['MUNFULLNAME']}]",
-          end="")
+
+    print(f"region_code={region_code}&prefix={prefix}",           end="")

@@ -65,13 +65,13 @@ def test_regions():
 
 
 def test_regions_mun():
-    url = f"{domen}/api/regions&munHierarchy=true"  # Один запрос выводит список всех регионов РФ
+    url = f"{domen}/api/regions?munHierarchy=true"  # Один запрос выводит список всех регионов РФ
 
     response = requests.get(url)
     elapsed_time = response.elapsed.total_seconds()
     response.encoding = 'utf-8'
     response_body = response.json()
-
+    # print(response_body)
     assert response.status_code == 200
     assert elapsed_time <= response_time
     sql_data = get_data_for_test(sql_strings["test_find_regions"]["sql_request"])

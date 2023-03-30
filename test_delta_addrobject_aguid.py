@@ -13,7 +13,7 @@ from params import response_time, count_regions
                          get_data_for_test(sql_strings["test_delta1_addr_object_aguid"]["sql_request"]))
 def test_delta_addrobject_aguid(objectguid, name):
     url = f"{domen}/api/addrobject/aoguid?aoguid={objectguid}&all=true"
-
+    print(f"aoguid [{objectguid}]")
     response = requests.get(url)
     elapsed_time = response.elapsed.total_seconds()
     response.encoding = 'utf-8'
